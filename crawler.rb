@@ -1,6 +1,7 @@
 require 'open-uri'
 require 'Nokogiri'
 require 'mysql2'
+require 'csv'
 
 client = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "shrewsbury12", :database => "yahoo_rss")
 
@@ -28,9 +29,6 @@ end
 
 #ここからXMLの処理
 
-#DBに格納するデータを入れる配列
-content = []
-
 links.each do |link|
   xml = Nokogiri::XML(open(link).read)
   item_nodes = xml.xpath('//channel/item')
@@ -42,5 +40,8 @@ links.each do |link|
     client.query("insert into Yahoo_RSS (title, link, pubDate, guid) values ('#{title}', '#{link}', '#{pubDate}', '#{guid}')")
   end
 end
+
+client.query("select * into outfile '/Users/tominarit/github_test/scraping/result.csv' fields terminated by ',' from Yahoo_RSS")
+
 #puts item.xpath('guid').text
 #参考サイト http://www.rokurofire.info/2013/11/11/ruby_db/
