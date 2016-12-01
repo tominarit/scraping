@@ -2,8 +2,10 @@ require 'open-uri'
 require 'Nokogiri'
 require 'mysql2'
 require 'csv'
+require './const'
 
-client = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "shrewsbury12", :database => "yahoo_rss")
+client = Mysql2::Client.new(:host => HOST, :username => USERNAME, :password => PASS, :database => DB)
+
 
 # スクレイピング先のURL
 original_url = 'http://headlines.yahoo.co.jp/rss/list'
@@ -41,7 +43,14 @@ links.each do |link|
   end
 end
 
-client.query("select * into outfile '/Users/tominarit/github_test/scraping/result.csv' fields terminated by ',' from Yahoo_RSS")
+client.query("select * into outfile '/Users/tominarit/github_test/scraping/result#{Time.now}.csv' fields terminated by ',' from Yahoo_RSS")
+
+ # CSV.foreach("result.csv", encoding: "Shift-JIS:UTF-8", undef: :replace, replace: "*") do |row|
+ #   p row
+ # end
+
+# csv = CSV.read("result.csv").encode()
+# p csv
 
 #puts item.xpath('guid').text
 #参考サイト http://www.rokurofire.info/2013/11/11/ruby_db/
